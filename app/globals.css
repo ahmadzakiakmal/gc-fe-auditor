@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background-primary: var(--background-primary);
+  --color-foreground-primary: var(--foreground-primary);
+  --color-background-secondary: var(--background-secondary);
+  --color-foreground-secondary: var(--foreground-secondary);
+
+  /* GardaChain Colors */
+  --color-blue-gc-dark: #15255b;
+  --color-blue-gc: #3b82f6;
+
+  --color-red-gc: #ca252e;
+
+  --color-orange-gc: #f74013;
+  --color-orange-gc-light: #ffa109;
+
+  --color-grey-gc: #94a3b8;
+  --color-grey-dark: #334155;
+
+  --color-dark: #16181b;
+
+  /* Dark theme colors */
+  --color-dark-primary: #0f172a;
+  --color-dark-secondary: #1a1f35;
+
+  /* Light theme colors */
+  --color-light-primary: #f9fbfd;
+  --color-light-secondary: #f8fafc;
+
+  /* Text colors for dark theme */
+  --color-dark-text-primary: #f9fbfd;
+  --color-dark-text-secondary: #ffffff;
+
+  /* Text colors for light theme */
+  --color-light-text-primary: #0f172a;
+  --color-light-text-secondary: #0f172a;
+
+  --font-family-jakarta: "Plus Jakarta Sans", sans-serif;
+  --font-family-firamono: "Fira Mono";
+}
+
+body {
+  font-family: "Inter", sans-serif;
+}
+html {
+  scroll-behavior: smooth;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Animations */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+.animate-blob {
+  animation: blob 7s infinite;
+}
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+@keyframes scan {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+.animate-scan {
+  animation: scan 3s linear infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+.animate-float-delayed {
+  animation: float-delayed 7s ease-in-out infinite 1s;
+}
+
+/* Grid Pattern */
+.bg-grid-slate-100 {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='%23f1f5f9'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+}
+
+@keyframes bg-position-shift-x {
+  from {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: -100px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@keyframes bg-position-shift-x-reverse {
+  from {
+    background-position: -100px 0;
+  }
+  50% {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -100px 0;
+  }
+}
+
+.animate-bg-shift-x {
+  animation: bg-position-shift-x 6500ms ease-in-out infinite;
+}
+
+.animate-bg-shift-x-reverse {
+  animation: bg-position-shift-x-reverse 5000ms ease-in-out infinite;
+}
+
+button {
+  cursor: pointer;
+}
+
