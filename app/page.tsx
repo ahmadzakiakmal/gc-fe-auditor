@@ -1,30 +1,12 @@
 "use client";
 import Image from "next/image";
-import { Github, Shield } from "lucide-react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Shield } from "lucide-react";
 import GcLogo from "@/public/gardachain-logo.png";
 import GcLogoWhite from "@/public/gardachain-logo-white-sm.png";
 import ThemeSwitcher from "@/components/shared/ThemeSwitcher";
+import { SiGithub } from "@icons-pack/react-simple-icons";
 
 export default function AuditorAuthPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function handleGithubLogin() {
-    try {
-      setIsLoading(true);
-      // TODO: Implement GitHub OAuth for auditors
-      console.log("Auditor GitHub login clicked");
-      // On success, redirect to /dashboard
-      router.push("/dashboard");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   return (
     <main className="font-family-jakarta bg-light-secondary dark:bg-dark-primary text-dark dark:text-white w-full h-screen overflow-y-auto flex flex-col">
       {/* Header */}
@@ -74,14 +56,12 @@ export default function AuditorAuthPage() {
 
           {/* Login Card */}
           <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
-            <button
-              onClick={handleGithubLogin}
-              disabled={isLoading}
-              className="w-full font-semibold text-white bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 duration-200 rounded-md py-3 px-4 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-            >
-              <Github className="size-5" />
-              <span>{isLoading ? "Connecting to GitHub..." : "Continue with GitHub"}</span>
-            </button>
+            <a href={process.env.NEXT_PUBLIC_GC_AUTH_SERVICE + "/api/oauth/login"}>
+              <button className="w-full font-semibold text-white bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 duration-200 rounded-md py-3 px-4 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3">
+                <SiGithub size={20} />
+                <span>Continue with GitHub</span>
+              </button>
+            </a>
 
             <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">
               <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-3">Auditor capabilities:</p>

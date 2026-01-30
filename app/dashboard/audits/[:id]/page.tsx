@@ -1,7 +1,7 @@
 "use client";
 import Breadcrumb from "@/components/shared/Breadcrumb";
 import ContentCard from "@/components/shared/ContentCard";
-import { FileText, Code2, Clock, Play, CheckCircle, X, Plus, Edit2, Trash2, CheckSquare, Square } from "lucide-react";
+import { Code2, Play, CheckCircle, X, Plus, Edit2, Trash2, CheckSquare, Square } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -511,7 +511,7 @@ export default function AuditDetailPage() {
           onClick={() => setIsSummaryModalOpen(false)}
           className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
         ></div>
-        <ContentCard className="relative z-10 w-[90%] max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <ContentCard className="relative z-10 w-[90%] max-w-175 max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <h1 className="font-semibold text-[20px] text-slate-700 dark:text-slate-200">Edit Executive Summary</h1>
             <button
@@ -549,7 +549,7 @@ export default function AuditDetailPage() {
           onClick={() => setIsFindingModalOpen(false)}
           className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
         ></div>
-        <ContentCard className="relative z-10 w-[90%] max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <ContentCard className="relative z-10 w-[90%] max-w-175 max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <h1 className="font-semibold text-[20px] text-slate-700 dark:text-slate-200">
               {editingFinding ? "Edit Finding" : "Add Finding"}
@@ -636,7 +636,7 @@ export default function AuditDetailPage() {
           onClick={() => setIsFlowModalOpen(false)}
           className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
         ></div>
-        <ContentCard className="relative z-10 w-[90%] max-w-[500px]">
+        <ContentCard className="relative z-10 w-[90%] max-w-125">
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
             <h1 className="font-semibold text-[20px] text-slate-700 dark:text-slate-200">Create Custom Flow</h1>
             <button
