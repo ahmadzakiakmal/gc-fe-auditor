@@ -220,7 +220,9 @@ function AuditCard({ report }: { report: Report }) {
 
         <div className="flex justify-between items-center">
           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">SUBMITTED</span>
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{formatDate(report.createdAt)}</span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            {formatDate(report.created_at)}
+          </span>
         </div>
 
         <div className="flex justify-between items-center">

@@ -64,7 +64,7 @@ export interface Report {
   progress: number;
   paid: boolean;
   outOfScopeFiles: string[];
-  createdAt: string;
+  created_at: string;
   findings: Finding[];
 }
 

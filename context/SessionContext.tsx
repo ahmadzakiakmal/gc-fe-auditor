@@ -47,6 +47,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setUser(user);
 
       const reports = await getAllReports();
+      console.log(reports);
+
       setReports(reports);
     } catch (error) {
       console.error("Failed to fetch session:", error);
