@@ -66,6 +66,7 @@ export interface Report {
   outOfScopeFiles: string[];
   created_at: string;
   findings: Finding[];
+  username?: string;
 }
 
 export interface Finding {
