@@ -3,6 +3,7 @@ import { Fira_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import LayoutWrapper from "@/components/layouts/LayoutWrapper";
+import { SessionProvider } from "@/context/SessionContext";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -57,7 +58,9 @@ export default function RootLayout({
       </head>
       <body className={`${jakarta.variable} ${firamono.variable} antialiased`}>
         <ToastContainer />
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <SessionProvider>
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </SessionProvider>
       </body>
     </html>
   );

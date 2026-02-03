@@ -1,9 +1,11 @@
 "use client";
 import Breadcrumb from "@/components/shared/Breadcrumb";
 import ContentCard from "@/components/shared/ContentCard";
-import { FileText, Clock, CheckCircle, AlertCircle, Eye } from "lucide-react";
+import { useSession } from "@/context/SessionContext";
+import { Report, ReportStatus } from "@/types/types";
+import { FileText, Clock, CheckCircle, AlertCircle, Eye, FolderGit } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect } from "react";
 
 export default function AuditorDashboardPage() {
   const breadcrumbData = [
@@ -13,56 +15,22 @@ export default function AuditorDashboardPage() {
     },
   ];
 
-  // Placeholder audits data
-  const [audits] = useState([
-    {
-      id: 1,
-      repository_name: "smart-contract-vault",
-      client: "octocat",
-      files_count: 8,
-      status: "PENDING_REVIEW",
-      payment_status: "PAID",
-      submitted_date: "2025-01-26T10:30:00Z",
-      priority: "high",
-    },
-    {
-      id: 2,
-      repository_name: "defi-protocol",
-      client: "ethereum-dev",
-      files_count: 12,
-      status: "IN_PROGRESS",
-      payment_status: "PAID",
-      submitted_date: "2025-01-25T14:20:00Z",
-      priority: "medium",
-    },
-    {
-      id: 3,
-      repository_name: "nft-marketplace",
-      client: "web3-builder",
-      files_count: 6,
-      status: "COMPLETED",
-      payment_status: "PAID",
-      submitted_date: "2025-01-22T09:15:00Z",
-      priority: "low",
-    },
-    {
-      id: 4,
-      repository_name: "dao-governance",
-      client: "octocat",
-      files_count: 10,
-      status: "PENDING_REVIEW",
-      payment_status: "PAID",
-      submitted_date: "2025-01-27T16:45:00Z",
-      priority: "high",
-    },
-  ]);
+  // Empty array - will be populated from API later
+  const { reports, refreshSession, isLoading } = useSession();
 
-  const pendingReviews = audits.filter((a) => a.status === "PENDING_REVIEW").length;
-  const inProgress = audits.filter((a) => a.status === "IN_PROGRESS").length;
-  const completed = audits.filter((a) => a.status === "COMPLETED").length;
+  useEffect(() => {
+    refreshSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const pendingReviews = reports?.filter((a) => a.status === ReportStatus.AUDITOR_REVIEW).length;
+  const inProgress = reports?.filter(
+    (a) => a.status === ReportStatus.AI_REVIEW || a.status === ReportStatus.AUDITOR_REVIEW,
+  ).length;
+  const completed = reports?.filter((a) => a.status === ReportStatus.DONE).length;
 
   return (
-    <main className="bg-light-secondary dark:bg-slate-950 w-full h-screen overflow-y-auto p-10">
+    <main className="font-family-jakarta bg-light-secondary dark:bg-slate-950 w-full h-screen overflow-y-auto p-10">
       <Breadcrumb data={breadcrumbData} />
       <h1 className="text-[32px] font-semibold text-blue-gc-dark dark:text-white">Auditor Dashboard</h1>
       <p className="font-semibold text-grey-dark dark:text-grey-gc mt-2">
@@ -78,7 +46,11 @@ export default function AuditorDashboardPage() {
             </div>
             <h1 className="font-bold text-sm text-slate-500">Total Audits</h1>
           </div>
-          <p className="pl-11 mt-3 font-bold">{audits.length}</p>
+          {isLoading ? (
+            <div className="w-full h-6 pl-11 mt-3 rounded-lg bg-slate-300 dark:bg-slate-700 animate-pulse"></div>
+          ) : (
+            <p className="pl-11 mt-3 font-bold">{reports?.length}</p>
+          )}
         </ContentCard>
 
         <ContentCard className="my-7">
@@ -88,7 +60,11 @@ export default function AuditorDashboardPage() {
             </div>
             <h1 className="font-bold text-sm text-slate-500">Pending Review</h1>
           </div>
-          <p className="pl-11 mt-3 font-bold">{pendingReviews}</p>
+          {isLoading ? (
+            <div className="w-full h-6 pl-11 mt-3 rounded-lg bg-slate-300 dark:bg-slate-700 animate-pulse"></div>
+          ) : (
+            <p className="pl-11 mt-3 font-bold">{pendingReviews}</p>
+          )}
         </ContentCard>
 
         <ContentCard className="my-7">
@@ -98,7 +74,11 @@ export default function AuditorDashboardPage() {
             </div>
             <h1 className="font-bold text-sm text-slate-500">In Progress</h1>
           </div>
-          <p className="pl-11 mt-3 font-bold">{inProgress}</p>
+          {isLoading ? (
+            <div className="w-full h-6 pl-11 mt-3 rounded-lg bg-slate-300 dark:bg-slate-700 animate-pulse"></div>
+          ) : (
+            <p className="pl-11 mt-3 font-bold">{inProgress}</p>
+          )}
         </ContentCard>
 
         <ContentCard className="my-7">
@@ -108,61 +88,96 @@ export default function AuditorDashboardPage() {
             </div>
             <h1 className="font-bold text-sm text-slate-500">Completed</h1>
           </div>
-          <p className="pl-11 mt-3 font-bold">{completed}</p>
+          {isLoading ? (
+            <div className="w-full h-6 pl-11 mt-3 rounded-lg bg-slate-300 dark:bg-slate-700 animate-pulse"></div>
+          ) : (
+            <p className="pl-11 mt-3 font-bold">{completed}</p>
+          )}
         </ContentCard>
       </div>
 
-      {/* Recent Audits */}
+      {/* Assigned Audits */}
       <ContentCard className="my-7">
         <div className="flex items-center justify-between mb-5">
           <div>
             <h1 className="text-[24px] font-semibold text-blue-gc-dark dark:text-white">Assigned Audits</h1>
             <p className="font-semibold text-grey-dark dark:text-grey-gc">Paid audits ready for your review</p>
           </div>
-          <Link href="/dashboard/audits">
-            <button className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 flex items-center gap-1">
-              View All
-            </button>
-          </Link>
+          {reports && reports?.length > 3 && (
+            <Link href="/dashboard/audits">
+              <button className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 flex items-center gap-1">
+                View All
+              </button>
+            </Link>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {audits.slice(0, 3).map((audit) => (
-            <AuditCard
-              key={audit.id}
-              audit={audit}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          // Loading state
+          <div className="grid grid-cols-3 gap-5">
+            <div className="w-full h-50 bg-slate-300 dark:bg-slate-700 animate-pulse rounded-md"></div>
+            <div className="w-full h-50 bg-slate-300 dark:bg-slate-700 animate-pulse rounded-md"></div>
+            <div className="w-full h-50 bg-slate-300 dark:bg-slate-700 animate-pulse rounded-md"></div>
+          </div>
+        ) : !reports || reports.length <= 0 ? (
+          // Empty State
+          <div className="flex flex-col items-center justify-center py-12 px-4">
+            <div className="rounded-full bg-slate-100 dark:bg-slate-800 p-4 mb-4">
+              <FolderGit className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+            </div>
+            <h3 className="text-lg font-semibold text-blue-gc-dark dark:text-white mb-2">No Audits Assigned</h3>
+            <p className="text-sm text-grey-dark dark:text-grey-gc text-center max-w-sm">
+              You don&apos;t have any audits assigned yet. New assignments will appear here.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {reports?.slice(0, 3).map((audit) => (
+              <AuditCard
+                key={audit.id}
+                report={audit}
+              />
+            ))}
+          </div>
+        )}
       </ContentCard>
     </main>
   );
 }
 
-function AuditCard({ audit }: { audit: any }) {
-  const getStatusColor = (status: string) => {
+function AuditCard({ report }: { report: Report }) {
+  const getStatusColor = (status: ReportStatus) => {
     switch (status) {
-      case "PENDING_REVIEW":
+      case ReportStatus.AUDITOR_REVIEW:
         return "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400";
-      case "IN_PROGRESS":
+      case ReportStatus.AI_REVIEW:
+      case ReportStatus.NEED_DEV_REMEDIATION:
         return "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400";
-      case "COMPLETED":
+      case ReportStatus.DONE:
         return "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400";
+      case ReportStatus.QUEUE:
+        return "bg-slate-100 dark:bg-slate-900/30 text-slate-700 dark:text-slate-400";
       default:
         return "bg-slate-100 dark:bg-slate-900/30 text-slate-700 dark:text-slate-400";
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "text-red-600 dark:text-red-400";
-      case "medium":
-        return "text-amber-600 dark:text-amber-400";
-      case "low":
-        return "text-slate-600 dark:text-slate-400";
+  const getStatusLabel = (status: ReportStatus) => {
+    switch (status) {
+      case ReportStatus.QUEUE:
+        return "In Queue";
+      case ReportStatus.AI_REVIEW:
+        return "AI Review";
+      case ReportStatus.AUDITOR_REVIEW:
+        return "Auditor Review";
+      case ReportStatus.NEED_DEV_REMEDIATION:
+        return "Needs Remediation";
+      case ReportStatus.DEV_REMEDIATED:
+        return "Dev Remediated";
+      case ReportStatus.DONE:
+        return "Completed";
       default:
-        return "text-slate-600 dark:text-slate-400";
+        return status;
     }
   };
 
@@ -187,44 +202,56 @@ function AuditCard({ audit }: { audit: any }) {
             <FileText size={20} />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-bold text-sm text-slate-700 dark:text-slate-200 truncate">{audit.repository_name}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">by {audit.client}</p>
+            <h2 className="font-bold text-sm text-slate-700 dark:text-slate-200 truncate">Audit Report #{report.id}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{report.paid ? "Paid" : "Unpaid"}</p>
           </div>
         </div>
-        <span className={`text-xs font-bold uppercase ${getPriorityColor(audit.priority)}`}>{audit.priority}</span>
+        {report.progress > 0 && (
+          <div className="text-xs font-bold text-blue-600 dark:text-blue-400">{report.progress}%</div>
+        )}
       </div>
 
       {/* Details */}
       <div className="space-y-2 mb-4">
         <div className="flex justify-between items-center">
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">FILES</span>
-          <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{audit.files_count}</span>
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">FINDINGS</span>
+          <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{report.findings?.length || 0}</span>
         </div>
 
         <div className="flex justify-between items-center">
           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">SUBMITTED</span>
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            {formatDate(audit.submitted_date)}
-          </span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{formatDate(report.createdAt)}</span>
         </div>
 
         <div className="flex justify-between items-center">
           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">STATUS</span>
-          <span className={`text-xs font-semibold px-3 py-1 rounded-full ${getStatusColor(audit.status)}`}>
-            {audit.status.replace("_", " ")}
+          <span className={`text-xs font-semibold px-3 py-1 rounded-full ${getStatusColor(report.status)}`}>
+            {getStatusLabel(report.status)}
           </span>
         </div>
+
+        {report.progress > 0 && report.progress < 100 && (
+          <div className="pt-2">
+            <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-500 transition-all"
+                style={{ width: `${report.progress}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Action */}
       <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
-        <Link href={`/dashboard/audits/${audit.id}`}>
+        <Link href={`/dashboard/audits/${report.id}`}>
           <button className="w-full text-sm font-medium bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-slate-700 dark:hover:bg-slate-800 rounded-lg duration-200 flex items-center justify-center h-9 gap-2">
             <Eye size={16} />
-            {audit.status === "PENDING_REVIEW" ? "Start Review" : "Continue Review"}
+            {report.status === ReportStatus.AUDITOR_REVIEW ? "Start Review" : "View Audit"}
           </button>
         </Link>
       </div>
     </div>
   );
 }
+
