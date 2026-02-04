@@ -313,3 +313,34 @@ export async function deleteFinding(findingId: number) {
 
   return response.json();
 }
+
+export async function auditorSubmitReport(reportId: number, status: string) {
+  if (!reportId) {
+    throw new Error("Report ID is required.");
+  }
+
+  if (!status || status.trim() === "") {
+    throw new Error("Status is required.");
+  }
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_GC_REPORT_SERVICE}/${reportId}/submit`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      status: status,
+    }),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized, try logging in again");
+    }
+    throw new Error(`HTTP Error ${response.status}`);
+  }
+
+  return response.json();
+}

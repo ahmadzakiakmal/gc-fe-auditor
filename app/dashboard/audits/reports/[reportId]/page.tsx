@@ -6,7 +6,14 @@ import { Loader2, Edit2, Plus, X, AlertCircle, CheckCircle, Trash2 } from "lucid
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { getReportDetails, updateReportSummary, updateFinding, createFinding, deleteFinding } from "@/lib/api/data";
+import {
+  getReportDetails,
+  updateReportSummary,
+  updateFinding,
+  createFinding,
+  deleteFinding,
+  auditorSubmitReport,
+} from "@/lib/api/data";
 import Markdown from "react-markdown";
 import Link from "next/link";
 
@@ -48,6 +55,7 @@ export default function ReportDetailPage() {
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isFindingModalOpen, setIsFindingModalOpen] = useState(false);
   const [editingFinding, setEditingFinding] = useState<Finding | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form states
   const [summaryDraft, setSummaryDraft] = useState("");
@@ -211,6 +219,35 @@ export default function ReportDetailPage() {
     } catch (error) {
       console.error("Failed to delete finding:", error);
       toast.error(error instanceof Error ? error.message : "Failed to delete finding");
+    }
+  }
+
+  async function handleSubmitReport(status: "NEED_DEV_REMEDIATION" | "DONE") {
+    const statusLabel = status === "NEED_DEV_REMEDIATION" ? "Need Developer Remediation" : "Completed";
+
+    if (!confirm(`Are you sure you want to mark this report as "${statusLabel}"?`)) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const result = await auditorSubmitReport(Number(report_id), status);
+
+      setReport((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          status: status,
+        };
+      });
+
+      toast.success(`Report status updated to: ${statusLabel}`);
+      console.log("Submit result:", result);
+    } catch (error) {
+      console.error("Failed to submit report:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to submit report");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -445,6 +482,63 @@ export default function ReportDetailPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+      </ContentCard>
+
+      {/* Submit Report Actions */}
+      <ContentCard className="my-7">
+        <div className="pb-3 mb-4 border-b border-slate-200 dark:border-slate-800">
+          <h2 className="text-[24px] font-semibold text-blue-gc-dark dark:text-white">Submit Report</h2>
+          <p className="font-semibold text-grey-dark dark:text-grey-gc text-sm">
+            Change report status and notify the client
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Need Dev Remediation Button */}
+          <button
+            onClick={() => handleSubmitReport("NEED_DEV_REMEDIATION")}
+            disabled={isSubmitting}
+            className="group relative overflow-hidden bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-lg p-6 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <div className="flex flex-col items-start gap-2">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-5 h-5" />
+                <span className="text-lg">Request Developer Remediation</span>
+              </div>
+              <p className="text-sm text-amber-100 text-left">
+                Issues found require developer fixes. Client will be notified to review and remediate the findings.
+              </p>
+            </div>
+          </button>
+
+          {/* Mark as Done Button */}
+          <button
+            onClick={() => handleSubmitReport("DONE")}
+            disabled={isSubmitting}
+            className="group relative overflow-hidden bg-linear-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold rounded-lg p-6 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <div className="flex flex-col items-start gap-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5" />
+                <span className="text-lg">Mark as Complete</span>
+              </div>
+              <p className="text-sm text-emerald-100 text-left">
+                Audit is complete. All issues are resolved or no issues were found. Client will receive the final
+                report.
+              </p>
+            </div>
+          </button>
+        </div>
+
+        {/* Loading overlay */}
+        {isSubmitting && (
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm rounded-lg flex items-center justify-center">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 flex items-center gap-3">
+              <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+              <span className="font-semibold text-slate-700 dark:text-slate-200">Submitting report...</span>
+            </div>
           </div>
         )}
       </ContentCard>
