@@ -6,18 +6,16 @@ import GcLogo from "@/public/gardachain-logo-sm.png";
 import GcLogoWhite from "@/public/gardachain-logo-white-sm.png";
 import { usePathname } from "next/navigation";
 import NavigationItem from "./NavigationLink";
-import { House, FileText, Shield } from "lucide-react";
+import { House, Shield } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "@/context/SessionContext";
 
 export default function Sidebar() {
   const path = usePathname();
+  const { reports } = useSession();
 
   // Placeholder recent audits - no API calls
-  const recentAudits = [
-    { id: 1, name: "smart-contract-vault", client: "octocat" },
-    { id: 2, name: "defi-protocol", client: "ethereum-dev" },
-    { id: 3, name: "nft-marketplace", client: "web3-builder" },
-  ];
+  const recentAudits = reports ? reports?.slice(0, 3) : null;
 
   const mainLinks = [
     { label: "Dashboard", link: "/dashboard", icon: <House size={16} />, active: path === "/dashboard" },
@@ -34,7 +32,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="font-family-jakarta flex flex-col justify-between p-10 bg-white dark:bg-dark-secondary outline-dark-primary/20 dark:outline-white/20 outline-1 w-[275px] min-h-screen shrink-0">
+    <aside className="font-family-jakarta flex flex-col justify-between p-10 bg-white dark:bg-dark-secondary outline-dark-primary/20 dark:outline-white/20 outline-1 w-68.75 min-h-screen shrink-0">
       <div>
         <Link
           href="/"
@@ -78,26 +76,35 @@ export default function Sidebar() {
 
         <h1 className="text-grey-gc font-bold text-[14px] mb-2.5 mt-5">RECENT AUDITS</h1>
         <div className="flex flex-col gap-2.5">
-          {recentAudits.slice(0, 3).map((audit) => (
-            <Link
-              key={audit.id}
-              href={`/dashboard/audits/${audit.id}`}
-              className={`flex flex-col gap-0.5 px-3 py-2 rounded-lg transition-colors ${
-                path === `/dashboard/audits/${audit.id}`
-                  ? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <Shield
-                  size={14}
-                  className="text-purple-600 dark:text-purple-400 shrink-0"
-                />
-                <span className="text-sm font-medium truncate">{audit.name}</span>
-              </div>
-              <span className="text-xs text-slate-500 dark:text-slate-500 pl-5">by {audit.client}</span>
-            </Link>
-          ))}
+          {recentAudits == null && (
+            <>
+              <div className="h-10 w-full bg-slate-300 dark:bg-slate-700 animate-pulse rounded-sm"></div>
+              <div className="h-10 w-full bg-slate-300 dark:bg-slate-700 animate-pulse rounded-sm"></div>
+            </>
+          )}
+          {recentAudits &&
+            recentAudits.slice(0, 3).map((audit) => (
+              <Link
+                key={audit.id}
+                href={`/dashboard/audits/${audit.id}`}
+                className={`flex flex-col gap-0.5 px-3 py-2 rounded-lg transition-colors ${
+                  path === `/dashboard/audits/${audit.id}`
+                    ? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Shield
+                    size={14}
+                    className="text-purple-600 dark:text-purple-400 shrink-0"
+                  />
+                  <span className="text-sm font-medium truncate">{audit.repo_url.split("/")[4]}</span>
+                </div>
+                <span className="text-xs text-slate-500 dark:text-slate-500 pl-5">
+                  by {audit.repo_url.split("/")[3]}
+                </span>
+              </Link>
+            ))}
         </div>
       </div>
 

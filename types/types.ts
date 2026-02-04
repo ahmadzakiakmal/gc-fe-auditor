@@ -67,6 +67,7 @@ export interface Report {
   created_at: string;
   findings: Finding[];
   username?: string;
+  repo_url: string;
 }
 
 export interface Finding {

@@ -38,8 +38,8 @@ export default function AuditorDashboardPage() {
       </p>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
-        <ContentCard className="my-7">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7 mt-7">
+        <ContentCard className="">
           <div className="flex items-center gap-2">
             <div className="bg-purple-600/20 text-purple-600 dark:text-purple-500 p-2 rounded-md">
               <FileText size={20} />
@@ -53,7 +53,7 @@ export default function AuditorDashboardPage() {
           )}
         </ContentCard>
 
-        <ContentCard className="my-7">
+        <ContentCard className="">
           <div className="flex items-center gap-2">
             <div className="bg-amber-600/20 text-amber-600 dark:text-amber-500 p-2 rounded-md">
               <Clock size={20} />
@@ -67,7 +67,7 @@ export default function AuditorDashboardPage() {
           )}
         </ContentCard>
 
-        <ContentCard className="my-7">
+        <ContentCard className="">
           <div className="flex items-center gap-2">
             <div className="bg-blue-600/20 text-blue-600 dark:text-blue-500 p-2 rounded-md">
               <AlertCircle size={20} />
@@ -81,7 +81,7 @@ export default function AuditorDashboardPage() {
           )}
         </ContentCard>
 
-        <ContentCard className="my-7">
+        <ContentCard className="">
           <div className="flex items-center gap-2">
             <div className="bg-emerald-600/20 text-emerald-600 dark:text-emerald-500 p-2 rounded-md">
               <CheckCircle size={20} />
@@ -165,15 +165,15 @@ function AuditCard({ report }: { report: Report }) {
   const getStatusLabel = (status: ReportStatus) => {
     switch (status) {
       case ReportStatus.QUEUE:
-        return "In Queue";
+        return "QUEUE";
       case ReportStatus.AI_REVIEW:
-        return "AI Review";
+        return "Scanning";
       case ReportStatus.AUDITOR_REVIEW:
-        return "Auditor Review";
+        return "In Review";
       case ReportStatus.NEED_DEV_REMEDIATION:
-        return "Needs Remediation";
+        return "Remediation";
       case ReportStatus.DEV_REMEDIATED:
-        return "Dev Remediated";
+        return "Remediated";
       case ReportStatus.DONE:
         return "Completed";
       default:
@@ -202,7 +202,9 @@ function AuditCard({ report }: { report: Report }) {
             <FileText size={20} />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-bold text-sm text-slate-700 dark:text-slate-200 truncate">Audit Report #{report.id}</h2>
+            <h2 className="font-bold text-sm text-slate-700 dark:text-slate-200 truncate">
+              {report.repo_url.split("/")[4]}
+            </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">{report.paid ? "Paid" : "Unpaid"}</p>
           </div>
         </div>

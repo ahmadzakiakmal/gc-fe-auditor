@@ -43,7 +43,7 @@ export default function AuditsListPage() {
       <h1 className="text-[32px] font-semibold text-blue-gc-dark dark:text-white">All Audits</h1>
       <p className="font-semibold text-grey-dark dark:text-grey-gc mt-2">Review and manage all paid audit requests</p>
 
-      <ContentCard className="my-7">
+      <div className="my-7">
         <div className="flex items-center justify-between mb-5">
           <div>
             <h2 className="text-[20px] font-semibold text-blue-gc-dark dark:text-white">
@@ -53,11 +53,13 @@ export default function AuditsListPage() {
               Filter and manage your assigned audits
             </p>
           </div>
-          <TabSwitcher
-            data={statusTabs}
-            state={statusFilter}
-            setState={setStatusFilter}
-          />
+          <ContentCard className="p-0! rounded-md">
+            <TabSwitcher
+              data={statusTabs}
+              state={statusFilter}
+              setState={setStatusFilter}
+            />
+          </ContentCard>
         </div>
 
         {/* Empty State */}
@@ -86,7 +88,7 @@ export default function AuditsListPage() {
             ))}
           </div>
         )}
-      </ContentCard>
+      </div>
     </main>
   );
 }
@@ -129,15 +131,15 @@ function ReportCard({ report }: { report: Report }) {
     return date.toLocaleDateString();
   }
 
-  function getPassedTime(dateString: string) {
+  function getPriority(dateString: string) {
     const date = new Date(dateString);
     const now = new Date();
     const diffInMs = now.getTime() - date.getTime();
     const diffInMins = Math.floor(diffInMs / (1000 * 60));
 
-    if (diffInMins === 1) return "Just Now";
-    if (diffInMins === 3) return "3 Mins Ago";
-    if (diffInMins >= 5) return "5 Mins Ago";
+    if (diffInMins === 1) return "Low";
+    if (diffInMins === 3) return "Medium";
+    if (diffInMins >= 5) return "High";
   }
 
   return (
@@ -150,13 +152,15 @@ function ReportCard({ report }: { report: Report }) {
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="font-bold text-sm text-slate-700 dark:text-slate-200 truncate">
-              {report.url?.split("/")[3] || "Repository not found"}
+              {report.repo_url?.split("/")[4] || "Repo not found"}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">by {report?.username || "User not found"}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              by {report.repo_url?.split("/")[3] || "User not found"}
+            </p>
           </div>
         </div>
         <span className={`text-xs font-bold uppercase shrink-0 ${getPriorityColor(report.created_at)}`}>
-          {getPassedTime(report.created_at)}
+          {getPriority(report.created_at)}
         </span>
       </div>
 
