@@ -344,3 +344,23 @@ export async function auditorSubmitReport(reportId: number, status: string) {
 
   return response.json();
 }
+
+export async function setEmail(email: string) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_GC_AUTH_SERVICE}/api/email`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized, try logging in again]");
+    }
+    throw new Error(`Fail to set email`);
+  }
+
+  return response.json();
+}

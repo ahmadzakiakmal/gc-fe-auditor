@@ -45,6 +45,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const data = await getDashboardData();
       const user = data.user;
       setUser(user);
+      if (!user.email) return router.replace("/auth/email");
 
       const reports = await getAllReports();
       console.log(reports);
