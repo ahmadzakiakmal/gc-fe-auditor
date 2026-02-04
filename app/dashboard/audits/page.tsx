@@ -45,7 +45,7 @@ export default function AuditsListPage() {
 
       <div className="my-7">
         <div className="flex items-center justify-between mb-5">
-          <div>
+          <div className="hidden">
             <h2 className="text-[20px] font-semibold text-blue-gc-dark dark:text-white">
               Paid Audits ({filteredAudits?.length})
             </h2>
@@ -193,10 +193,12 @@ function ReportCard({ report }: { report: Report }) {
 
       {/* Action */}
       <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
-        <Link href={`/dashboard/audits/${report.id}`}>
+        <Link
+          href={report.status == "QUEUE" ? `/dashboard/audits/${report.id}` : `/dashboard/audits/reports/${report.id}`}
+        >
           <button className="w-full text-sm font-medium bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-slate-700 dark:hover:bg-slate-800 rounded-lg duration-200 flex items-center justify-center h-9 gap-2">
             <Eye size={16} />
-            {report.status === "QUEUE" ? "Start Review" : "Continue Review"}
+            {report.status === "QUEUE" ? "Start Audit" : "Continue Review"}
           </button>
         </Link>
       </div>

@@ -65,6 +65,8 @@ export default function AuditDetailPage() {
           return router.replace("/error?err=Audit%20not%20found&message=We%20were%20unable%20to%20find%20the%20audit");
         setAudit(foundAudit);
 
+        if (foundAudit.status != "QUEUE") return router.replace(`/dashboard/audits/reports/${audit_id}`);
+
         const scopeData = await getAuditScope(String(audit_id));
         console.log(scopeData.data.in_scope_files);
         console.log(scopeData.data.out_of_scope_files);
@@ -196,9 +198,6 @@ export default function AuditDetailPage() {
 
       toast.success("AI audit scan sent successfully");
       console.log("Scan result:", result);
-
-      // TODO: Handle the scan result (store report ID, redirect, etc.)
-      // For example: router.push(`/dashboard/reports/${result.report_id}`);
     } catch (error) {
       console.error("Failed to start audit:", error);
       toast.error(error instanceof Error ? error.message : "Failed to start audit");

@@ -54,6 +54,8 @@ export async function getReportDetails(reportId: number) {
 }
 
 export async function updateReportSummary(reportId: number, summary: string) {
+  console.log(process.env.NEXT_PUBLIC_GC_REPORT_SERVICE);
+
   if (!reportId) {
     throw new Error("Report ID is required.");
   }
@@ -62,7 +64,7 @@ export async function updateReportSummary(reportId: number, summary: string) {
     throw new Error("Summary cannot be empty.");
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_GC_REPORTS_SERVICE}/${reportId}/summary`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_GC_REPORT_SERVICE}/${reportId}/summary`, {
     method: "PATCH",
     credentials: "include",
     headers: {
@@ -101,7 +103,7 @@ export async function updateFinding(
     throw new Error("At least one field must be provided for update.");
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_GC_REPORTS_SERVICE}/findings/${findingId}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_GC_REPORT_SERVICE}/findings/${findingId}`, {
     method: "PATCH",
     credentials: "include",
     headers: {
@@ -239,3 +241,75 @@ export async function getAuditScope(auditId: string) {
   return response.json();
 }
 
+export async function createFinding(
+  reportId: number,
+  data: {
+    title: string;
+    severity: "high" | "medium" | "low";
+    explanation: string;
+    recommendation: string;
+  },
+) {
+  if (!reportId) {
+    throw new Error("Report ID is required.");
+  }
+
+  if (!data.title || data.title.trim() === "") {
+    throw new Error("Finding title is required.");
+  }
+
+  if (!data.explanation || data.explanation.trim() === "") {
+    throw new Error("Finding explanation is required.");
+  }
+
+  if (!data.recommendation || data.recommendation.trim() === "") {
+    throw new Error("Finding recommendation is required.");
+  }
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_GC_REPORT_SERVICE}/${reportId}/findings`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      title: data.title,
+      severity: data.severity,
+      explanation: data.explanation,
+      recommendation: data.recommendation,
+    }),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized, try logging in again");
+    }
+    throw new Error(`HTTP Error ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function deleteFinding(findingId: number) {
+  if (!findingId) {
+    throw new Error("Finding ID is required.");
+  }
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_GC_REPORT_SERVICE}/findings/${findingId}`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized, try logging in again");
+    }
+    throw new Error(`HTTP Error ${response.status}`);
+  }
+
+  return response.json();
+}

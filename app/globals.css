@@ -216,3 +216,81 @@ button {
   scrollbar-color: rgb(51 65 85) rgb(15 23 42); /* thumb track */
 }
 
+/* Code block styling */
+.prose pre {
+  @apply bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-4 overflow-x-auto font-family-firamono text-sm;
+}
+
+.prose code {
+  @apply font-family-firamono text-sm;
+}
+
+/* Inline code */
+.prose :not(pre) > code {
+  @apply bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700;
+}
+
+/* Code block text */
+.prose pre code {
+  @apply bg-transparent text-slate-700 dark:text-slate-300 p-0 border-0;
+}
+
+/* Scrollbar styling for code blocks */
+.prose pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+.prose pre::-webkit-scrollbar-track {
+  @apply bg-slate-200 dark:bg-slate-800 rounded;
+}
+
+.prose pre::-webkit-scrollbar-thumb {
+  @apply bg-slate-400 dark:bg-slate-600 rounded;
+}
+
+.prose pre::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-500 dark:bg-slate-500;
+}
+
+.prose > p {
+  @apply my-4;
+}
+
+.prose > h1,
+.prose > h2,
+.prose > h3,
+.prose > h4,
+.prose > h5,
+.prose > h6 {
+  @apply mt-8 mb-4;
+}
+
+.prose > h1 {
+  @apply mt-0;
+}
+
+.prose > ul,
+.prose > ol {
+  @apply my-4;
+}
+
+.prose > li {
+  @apply my-2;
+}
+
+.prose > pre {
+  @apply my-6;
+}
+
+.prose > blockquote {
+  @apply my-6;
+}
+
+.prose > hr {
+  @apply my-8;
+}
+
+.prose > table {
+  @apply my-6;
+}
+

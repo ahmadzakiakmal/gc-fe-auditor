@@ -248,7 +248,13 @@ function AuditCard({ report }: { report: Report }) {
 
       {/* Action */}
       <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
-        <Link href={`/dashboard/audits/${report.id}`}>
+        <Link
+          href={
+            report.status == ReportStatus.QUEUE
+              ? `/dashboard/audits/${report.id}`
+              : `/dashboard/audits/reports/${report.id}`
+          }
+        >
           <button className="w-full text-sm font-medium bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-slate-700 dark:hover:bg-slate-800 rounded-lg duration-200 flex items-center justify-center h-9 gap-2">
             <Eye size={16} />
             {report.status === ReportStatus.AUDITOR_REVIEW ? "Start Review" : "View Audit"}
