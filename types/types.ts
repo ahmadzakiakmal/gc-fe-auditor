@@ -58,6 +58,7 @@ export interface Repository {
 export interface Report {
   id: number;
   repositoryId: number | null;
+  repository_id: number | null;
   url?: string;
   summary: string | null;
   status: ReportStatus;
@@ -90,11 +91,18 @@ export interface ScanRequest {
   isBot: boolean;
 }
 
+export interface Flow {
+  name: string;
+  file_path: string;
+  flow: FlowFunction[];
+  type: string;
+  id?: number;
+}
+
 export interface FlowFunction {
-  id: number;
-  customFlowId: number;
-  filePath: string;
-  func: string;
+  function_name: string;
+  file_path: string;
+  function_signature?: string;
 }
 
 export interface CustomFlow {
