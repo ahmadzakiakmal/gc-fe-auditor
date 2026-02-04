@@ -3,7 +3,7 @@ import Breadcrumb from "@/components/shared/Breadcrumb";
 import ContentCard from "@/components/shared/ContentCard";
 import { useSession } from "@/context/SessionContext";
 import { Report, ReportStatus } from "@/types/types";
-import { FileText, Clock, CheckCircle, AlertCircle, Eye, FolderGit } from "lucide-react";
+import { FileText, Clock, CheckCircle, AlertCircle, Eye, FolderGit, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -248,18 +248,28 @@ function AuditCard({ report }: { report: Report }) {
 
       {/* Action */}
       <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
-        <Link
-          href={
-            report.status == ReportStatus.QUEUE
-              ? `/dashboard/audits/${report.id}`
-              : `/dashboard/audits/reports/${report.id}`
-          }
-        >
-          <button className="w-full text-sm font-medium bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-slate-700 dark:hover:bg-slate-800 rounded-lg duration-200 flex items-center justify-center h-9 gap-2">
-            <Eye size={16} />
-            {report.status === ReportStatus.AUDITOR_REVIEW ? "Start Review" : "View Audit"}
+        {report.status != ReportStatus.NEED_DEV_REMEDIATION ? (
+          <Link
+            href={
+              report.status == ReportStatus.QUEUE
+                ? `/dashboard/audits/${report.id}`
+                : `/dashboard/audits/reports/${report.id}`
+            }
+          >
+            <button className="w-full text-sm font-medium bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-slate-700 dark:hover:bg-slate-800 rounded-lg duration-200 flex items-center justify-center h-9 gap-2">
+              <Eye size={16} />
+              {report.status === ReportStatus.AUDITOR_REVIEW ? "Start Review" : "View Audit"}
+            </button>
+          </Link>
+        ) : (
+          <button
+            disabled
+            className="w-full text-sm font-medium bg-slate-100 dark:text-slate-200 dark:bg-slate-700 rounded-lg duration-200 flex items-center justify-center h-9 gap-2 opacity-60 cursor-not-allowed!"
+          >
+            <EyeOff size={16} />
+            Under Dev Remediation
           </button>
-        </Link>
+        )}
       </div>
     </div>
   );
