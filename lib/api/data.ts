@@ -93,6 +93,8 @@ export async function updateFinding(
     severity?: string;
     explanation?: string;
     recommendation?: string;
+    auditor_response?: string;
+    status?: "MITIGATION_CONFIRMED" | "PARTIALLY_MITIGATED" | "NOT_MITIGATED";
   },
 ) {
   if (!findingId) {
@@ -364,3 +366,4 @@ export async function setEmail(email: string) {
 
   return response.json();
 }
+

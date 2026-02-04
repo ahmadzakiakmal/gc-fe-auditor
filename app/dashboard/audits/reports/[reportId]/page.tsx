@@ -55,6 +55,7 @@ export default function ReportDetailPage() {
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isFindingModalOpen, setIsFindingModalOpen] = useState(false);
   const [editingFinding, setEditingFinding] = useState<Finding | null>(null);
+  const [auditorResponse, setAuditorResponse] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form states
@@ -65,6 +66,9 @@ export default function ReportDetailPage() {
   const [findingSeverity, setFindingSeverity] = useState<"high" | "medium" | "low">("medium");
   const [findingExplanation, setFindingExplanation] = useState("");
   const [findingRecommendation, setFindingRecommendation] = useState("");
+  const [findingStatus, setFindingStatus] = useState<"MITIGATION_CONFIRMED" | "PARTIALLY_MITIGATED" | "NOT_MITIGATED">(
+    "NOT_MITIGATED",
+  );
   const [isSavingFinding, setIsSavingFinding] = useState(false);
 
   const breadcrumbData = [
@@ -122,6 +126,10 @@ export default function ReportDetailPage() {
     setFindingSeverity(finding.severity);
     setFindingExplanation(finding.explanation);
     setFindingRecommendation(finding.recommendation);
+    setAuditorResponse(finding.auditor_response || "");
+    setFindingStatus(
+      (finding.status as "MITIGATION_CONFIRMED" | "PARTIALLY_MITIGATED" | "NOT_MITIGATED") || "NOT_MITIGATED",
+    );
     setIsFindingModalOpen(true);
   }
 
@@ -132,6 +140,8 @@ export default function ReportDetailPage() {
     setFindingSeverity("medium");
     setFindingExplanation("");
     setFindingRecommendation("");
+    setAuditorResponse("");
+    setFindingStatus("NOT_MITIGATED");
     setIsFindingModalOpen(true);
   }
 
@@ -151,6 +161,8 @@ export default function ReportDetailPage() {
           severity: findingSeverity,
           explanation: findingExplanation,
           recommendation: findingRecommendation,
+          auditor_response: auditorResponse,
+          status: findingStatus,
         });
 
         setReport((prev) => {
@@ -165,6 +177,8 @@ export default function ReportDetailPage() {
                     severity: findingSeverity,
                     explanation: findingExplanation,
                     recommendation: findingRecommendation,
+                    auditor_response: auditorResponse,
+                    status: findingStatus,
                   }
                 : f,
             ),
@@ -172,7 +186,7 @@ export default function ReportDetailPage() {
         });
         toast.success("Finding updated successfully");
       } else {
-        // Create new finding
+        // Create new finding (status defaults to NOT_MITIGATED on backend)
         const newFinding = await createFinding(Number(report_id), {
           title: findingTitle,
           severity: findingSeverity,
@@ -674,6 +688,44 @@ export default function ReportDetailPage() {
                 placeholder="Provide remediation steps and best practices..."
                 className="w-full text-[14px] text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 disabled:opacity-50"
               />
+            </div>
+
+            <div>
+              <label className="text-[12px] font-bold text-slate-500 dark:text-slate-400 mb-2 block">
+                AUDITOR RESPONSE
+              </label>
+              <textarea
+                value={auditorResponse}
+                onChange={(e) => setAuditorResponse(e.target.value)}
+                disabled={isSavingFinding}
+                rows={4}
+                placeholder="Optional: Respond to developer's comment or provide additional guidance..."
+                className="w-full text-[14px] text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 disabled:opacity-50"
+              />
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Use this to respond to the developer&apos;s comments or provide additional context
+              </p>
+            </div>
+
+            <div>
+              <label className="text-[12px] font-bold text-slate-500 dark:text-slate-400 mb-2 block">
+                MITIGATION STATUS
+              </label>
+              <select
+                value={findingStatus}
+                onChange={(e) =>
+                  setFindingStatus(e.target.value as "MITIGATION_CONFIRMED" | "PARTIALLY_MITIGATED" | "NOT_MITIGATED")
+                }
+                disabled={isSavingFinding}
+                className="w-full text-[14px] text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 disabled:opacity-50"
+              >
+                <option value="NOT_MITIGATED">Not Mitigated</option>
+                <option value="PARTIALLY_MITIGATED">Partially Mitigated</option>
+                <option value="MITIGATION_CONFIRMED">Mitigation Confirmed</option>
+              </select>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Mark the current status of this finding after reviewing developer&apos;s remediation
+              </p>
             </div>
 
             <button
