@@ -190,7 +190,7 @@ export default function AuditDetailPage() {
       if (!audit || !audit?.repository_id) {
         return toast.error("Repository id is not defined");
       }
-      const result = await submitAiScan(String(audit.repository_id), customFlowIds, testFlowNames);
+      const result = await submitAiScan(String(audit.id), customFlowIds, testFlowNames);
 
       // Clear interval and complete progress
       clearInterval(progressInterval);
