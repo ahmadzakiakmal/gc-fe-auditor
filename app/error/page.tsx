@@ -6,6 +6,7 @@ import Image from "next/image";
 import GcLogo from "@/public/gardachain-logo-sm.png";
 import GcLogoWhite from "@/public/gardachain-logo-white-sm.png";
 import { Suspense } from "react";
+import { useSession } from "@/context/SessionContext";
 
 function ErrorContent() {
   const searchParams = useSearchParams();
@@ -13,6 +14,8 @@ function ErrorContent() {
 
   const error = searchParams.get("error") || "Unknown Error";
   const message = searchParams.get("message") || "An unexpected error occurred";
+
+  const { user } = useSession();
 
   return (
     <main className="bg-light-secondary dark:bg-dark-primary text-dark dark:text-white w-full h-screen flex flex-col items-center justify-center px-8">
@@ -79,11 +82,14 @@ function ErrorContent() {
             Go Back
           </button>
           <button
-            onClick={() => router.push("/")}
+            onClick={() => {
+              if (user) return router.push("/dashboard");
+              router.push("/");
+            }}
             className="w-full font-semibold text-white bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 duration-200 rounded-md py-3 px-4 flex items-center justify-center gap-2"
           >
             <Home size={18} />
-            Return Home
+            {user ? "Return to Dashboard" : "Return to Home"}
           </button>
         </div>
       </div>

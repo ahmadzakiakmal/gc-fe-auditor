@@ -192,25 +192,27 @@ function ReportCard({ report }: { report: Report }) {
       </div>
 
       <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
-        {report.status !== ReportStatus.NEED_DEV_REMEDIATION ? (
-          <Link
-            href={
-              report.status == "QUEUE" ? `/dashboard/audits/${report.id}` : `/dashboard/audits/reports/${report.id}`
-            }
-          >
-            <button className="w-full text-sm font-medium bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-slate-700 dark:hover:bg-slate-800 rounded-lg duration-200 flex items-center justify-center h-9 gap-2">
-              <Eye size={16} />
-              {report.status === "QUEUE" ? "Start Audit" : "Continue Review"}
-            </button>
-          </Link>
-        ) : (
+        {report.status == ReportStatus.NEED_DEV_REMEDIATION || report.status == ReportStatus.DEV_REMEDIATED ? (
           <button
             disabled
             className="w-full text-sm font-medium bg-slate-100 dark:text-slate-200 dark:bg-slate-700 rounded-lg duration-200 flex items-center justify-center h-9 gap-2 opacity-60 cursor-not-allowed!"
           >
             <EyeOff size={16} />
-            Under Dev Remediation
+            {report.status == ReportStatus.NEED_DEV_REMEDIATION ? "Under Dev Remediation" : "Remediated"}
           </button>
+        ) : (
+          <Link
+            href={
+              report.status == ReportStatus.QUEUE
+                ? `/dashboard/audits/${report.id}`
+                : `/dashboard/audits/reports/${report.id}`
+            }
+          >
+            <button className="w-full text-sm font-medium bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-slate-700 dark:hover:bg-slate-800 rounded-lg duration-200 flex items-center justify-center h-9 gap-2">
+              <Eye size={16} />
+              {report.status === ReportStatus.AUDITOR_REVIEW ? "Start Review" : "View Audit"}
+            </button>
+          </Link>
         )}
       </div>
     </div>

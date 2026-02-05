@@ -28,7 +28,7 @@ export async function getAllReports() {
     if (response.status === 401) {
       throw new Error("Unauthorized, try logging in again");
     }
-    throw new Error(`Payment processing failed`);
+    throw new Error(`Error fetching reports`);
   }
 
   return response.json();
@@ -44,10 +44,13 @@ export async function getReportDetails(reportId: number) {
   });
 
   if (!response.ok) {
+    if (response.status === 403) {
+      throw new Error("The current state of the report is only for users");
+    }
     if (response.status === 401) {
       throw new Error("Unauthorized, try logging in again");
     }
-    throw new Error(`Payment processing failed`);
+    throw new Error(`Error fetching report details (${response.status})`);
   }
 
   return response.json();

@@ -88,7 +88,7 @@ export default function ReportDetailPage() {
       } catch (error) {
         console.error("Failed to fetch report:", error);
         toast.error(error instanceof Error ? error.message : "Failed to load report");
-        router.push("/error?err=Failed%20To%20Load%20Report&message=Unable%20to%20fetch%20report");
+        router.replace("/error?err=Failed%20To%20Load%20Report&message=Unable%20to%20fetch%20report");
       } finally {
         setIsLoading(false);
       }
@@ -236,8 +236,8 @@ export default function ReportDetailPage() {
     }
   }
 
-  async function handleSubmitReport(status: "NEED_DEV_REMEDIATION" | "DONE") {
-    const statusLabel = status === "NEED_DEV_REMEDIATION" ? "Need Developer Remediation" : "Completed";
+  async function handleSubmitReport(status: "NEED_DEV_REMEDIATION" | "DEV_REMEDIATED") {
+    const statusLabel = status === "NEED_DEV_REMEDIATION" ? "Need Developer Remediation" : "Remediated";
 
     if (!confirm(`Are you sure you want to mark this report as "${statusLabel}"?`)) {
       return;
@@ -529,7 +529,7 @@ export default function ReportDetailPage() {
 
           {/* Mark as Done Button */}
           <button
-            onClick={() => handleSubmitReport("DONE")}
+            onClick={() => handleSubmitReport("DEV_REMEDIATED")}
             disabled={isSubmitting}
             className="group relative overflow-hidden bg-linear-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold rounded-lg p-6 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
           >
