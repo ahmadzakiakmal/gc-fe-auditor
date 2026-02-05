@@ -248,13 +248,19 @@ function AuditCard({ report }: { report: Report }) {
 
       {/* Action */}
       <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
-        {report.status == ReportStatus.NEED_DEV_REMEDIATION || report.status == ReportStatus.DEV_REMEDIATED ? (
+        {report.status == ReportStatus.NEED_DEV_REMEDIATION ||
+        report.status == ReportStatus.DEV_REMEDIATED ||
+        report.status == ReportStatus.DONE ? (
           <button
             disabled
             className="w-full text-sm font-medium bg-slate-100 dark:text-slate-200 dark:bg-slate-700 rounded-lg duration-200 flex items-center justify-center h-9 gap-2 opacity-60 cursor-not-allowed!"
           >
             <EyeOff size={16} />
-            {report.status == ReportStatus.NEED_DEV_REMEDIATION ? "Under Dev Remediation" : "Remediated"}
+            {report.status == ReportStatus.DONE
+              ? "Completed"
+              : report.status == ReportStatus.NEED_DEV_REMEDIATION
+                ? "Under Dev Remediation"
+                : "Remediated"}
           </button>
         ) : (
           <Link

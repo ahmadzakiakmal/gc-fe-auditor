@@ -9,13 +9,18 @@ import NavigationItem from "./NavigationLink";
 import { House, Shield } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "@/context/SessionContext";
+import { ReportStatus } from "@/types/types";
 
 export default function Sidebar() {
   const path = usePathname();
   const { reports } = useSession();
 
   // Placeholder recent audits - no API calls
-  const recentAudits = reports ? reports?.slice(0, 3) : null;
+  const recentAudits = reports
+    ? reports
+        ?.filter((report) => report.status == ReportStatus.QUEUE || report.status == ReportStatus.AUDITOR_REVIEW)
+        .slice(0, 3)
+    : null;
 
   const mainLinks = [
     { label: "Dashboard", link: "/dashboard", icon: <House size={16} />, active: path === "/dashboard" },
