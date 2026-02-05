@@ -71,6 +71,16 @@ export default function ReportDetailPage() {
   );
   const [isSavingFinding, setIsSavingFinding] = useState(false);
 
+  // Confirmation modal states
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [confirmModalData, setConfirmModalData] = useState<{
+    title: string;
+    message: string;
+    confirmText: string;
+    onConfirm: () => void;
+    variant?: "danger" | "warning";
+  } | null>(null);
+
   const breadcrumbData = [
     { label: "Dashboard", url: "/dashboard" },
     { label: "Audits", url: "/dashboard/audits" },
@@ -214,56 +224,89 @@ export default function ReportDetailPage() {
   }
 
   async function handleDeleteFinding(findingId: number) {
-    if (!confirm("Are you sure you want to delete this finding? This action cannot be undone.")) {
-      return;
-    }
+    setConfirmModalData({
+      title: "Delete Finding",
+      message: "Are you sure you want to delete this finding? This action cannot be undone.",
+      confirmText: "Delete Finding",
+      variant: "danger",
+      onConfirm: async () => {
+        try {
+          await deleteFinding(findingId);
 
-    try {
-      await deleteFinding(findingId);
+          setReport((prev) => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              findings: prev.findings.filter((f) => f.id !== findingId),
+            };
+          });
 
-      setReport((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          findings: prev.findings.filter((f) => f.id !== findingId),
-        };
-      });
-
-      toast.success("Finding deleted successfully");
-    } catch (error) {
-      console.error("Failed to delete finding:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to delete finding");
-    }
+          toast.success("Finding deleted successfully");
+        } catch (error) {
+          console.error("Failed to delete finding:", error);
+          toast.error(error instanceof Error ? error.message : "Failed to delete finding");
+        } finally {
+          setIsConfirmModalOpen(false);
+        }
+      },
+    });
+    setIsConfirmModalOpen(true);
   }
 
   async function handleSubmitReport(status: "NEED_DEV_REMEDIATION" | "DEV_REMEDIATED") {
     const statusLabel = status === "NEED_DEV_REMEDIATION" ? "Need Developer Remediation" : "Remediated";
 
-    if (!confirm(`Are you sure you want to mark this report as "${statusLabel}"?`)) {
-      return;
-    }
+    setConfirmModalData({
+      title: "Submit Report",
+      message: `Are you sure you want to mark this report as "${statusLabel}"? The client will be notified of this status change.`,
+      confirmText: `Confirm ${statusLabel}`,
+      variant: "warning",
+      onConfirm: async () => {
+        try {
+          setIsSubmitting(true);
+          const result = await auditorSubmitReport(Number(report_id), status);
 
-    try {
-      setIsSubmitting(true);
-      const result = await auditorSubmitReport(Number(report_id), status);
+          setReport((prev) => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              status: status,
+            };
+          });
 
-      setReport((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          status: status,
-        };
-      });
-
-      toast.success(`Report status updated to: ${statusLabel}`);
-      console.log("Submit result:", result);
-    } catch (error) {
-      console.error("Failed to submit report:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to submit report");
-    } finally {
-      setIsSubmitting(false);
-    }
+          toast.success(`Report status updated to: ${statusLabel}`);
+          console.log("Submit result:", result);
+        } catch (error) {
+          console.error("Failed to submit report:", error);
+          toast.error(error instanceof Error ? error.message : "Failed to submit report");
+        } finally {
+          setIsSubmitting(false);
+          setIsConfirmModalOpen(false);
+        }
+      },
+    });
+    setIsConfirmModalOpen(true);
   }
+
+  const getMitigationStatusBadge = (status: string) => {
+    const statusMap: Record<string, { color: string; label: string }> = {
+      NOT_MITIGATED: {
+        color: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
+        label: "Not Mitigated",
+      },
+      PARTIALLY_MITIGATED: {
+        color:
+          "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
+        label: "Partially Mitigated",
+      },
+      MITIGATION_CONFIRMED: {
+        color:
+          "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
+        label: "Mitigation Confirmed",
+      },
+    };
+    return statusMap[status] || statusMap.NOT_MITIGATED;
+  };
 
   const getSeverityBadge = (severity: string) => {
     const colors = {
@@ -283,6 +326,8 @@ export default function ReportDetailPage() {
     };
     return statusMap[status] || "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400";
   };
+
+
 
   if (isLoading) {
     return (
@@ -434,7 +479,7 @@ export default function ReportDetailPage() {
               >
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <span className="text-sm font-bold text-slate-400 dark:text-slate-500">#{index + 1}</span>
                       <h3 className="text-[18px] font-bold text-slate-700 dark:text-slate-200">{finding.title}</h3>
                       <span
@@ -443,6 +488,13 @@ export default function ReportDetailPage() {
                         )}`}
                       >
                         {finding.severity.toUpperCase()}
+                      </span>
+                      <span
+                        className={`text-xs font-semibold px-3 py-1 rounded-full border ${getMitigationStatusBadge(
+                          finding.status,
+                        ).color}`}
+                      >
+                        {getMitigationStatusBadge(finding.status).label}
                       </span>
                     </div>
                   </div>
@@ -745,6 +797,60 @@ export default function ReportDetailPage() {
               )}
             </button>
           </form>
+        </ContentCard>
+      </div>
+
+      {/* Confirmation Modal */}
+      <div className={`${isConfirmModalOpen ? "flex justify-center items-center fixed inset-0 z-50" : "hidden"}`}>
+        <div
+          onClick={() => setIsConfirmModalOpen(false)}
+          className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+        ></div>
+        <ContentCard className="relative z-10 w-[90%] max-w-125">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start gap-3">
+              <div
+                className={`shrink-0 rounded-full p-2 ${
+                  confirmModalData?.variant === "danger"
+                    ? "bg-red-100 dark:bg-red-900/30"
+                    : "bg-amber-100 dark:bg-amber-900/30"
+                }`}
+              >
+                <AlertCircle
+                  className={`w-6 h-6 ${
+                    confirmModalData?.variant === "danger"
+                      ? "text-red-600 dark:text-red-400"
+                      : "text-amber-600 dark:text-amber-400"
+                  }`}
+                />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-semibold text-slate-700 dark:text-slate-200 mb-2">
+                  {confirmModalData?.title}
+                </h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{confirmModalData?.message}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end pt-4 border-t border-slate-200 dark:border-slate-800">
+              <button
+                onClick={() => setIsConfirmModalOpen(false)}
+                className="font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 duration-200 rounded-md py-2 px-4"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => confirmModalData?.onConfirm()}
+                className={`font-semibold text-white duration-200 rounded-md py-2 px-4 ${
+                  confirmModalData?.variant === "danger"
+                    ? "bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-500"
+                    : "bg-amber-600 hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-500"
+                }`}
+              >
+                {confirmModalData?.confirmText}
+              </button>
+            </div>
+          </div>
         </ContentCard>
       </div>
     </main>
