@@ -476,8 +476,8 @@ export default function ReportDetailPage() {
                 className="pb-6 border-b border-slate-200 dark:border-slate-800 last:border-0 last:pb-0"
               >
                 <div className="flex items-start justify-between gap-4 mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <div className="w-full">
+                    <div className="flex items-start gap-2 mb-2">
                       <span className="text-sm font-bold text-slate-400 dark:text-slate-500 mt-1">#{index + 1}</span>
                       <h3 className="text-[18px] font-bold text-slate-700 dark:text-slate-200">{finding.title}</h3>
                       <span
@@ -513,11 +513,11 @@ export default function ReportDetailPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <div>
+                  <div className="prose">
                     <h4 className="prose font-bold text-slate-700 dark:text-slate-300 text-sm mb-1">Explanation</h4>
                     <Markdown>{finding.explanation}</Markdown>
                   </div>
-                  <div>
+                  <div className="prose">
                     <h4 className="prose font-bold text-slate-700 dark:text-slate-300 text-sm mb-1">Recommendation</h4>
                     <Markdown>{finding.recommendation}</Markdown>
                   </div>
