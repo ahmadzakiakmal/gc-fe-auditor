@@ -478,7 +478,7 @@ export default function ReportDetailPage() {
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="text-sm font-bold text-slate-400 dark:text-slate-500">#{index + 1}</span>
+                      <span className="text-sm font-bold text-slate-400 dark:text-slate-500 mt-1">#{index + 1}</span>
                       <h3 className="text-[18px] font-bold text-slate-700 dark:text-slate-200">{finding.title}</h3>
                       <span
                         className={`text-xs font-semibold px-3 py-1 rounded-full border ${getSeverityBadge(
@@ -488,7 +488,7 @@ export default function ReportDetailPage() {
                         {finding.severity.toUpperCase()}
                       </span>
                       <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+                        className={`text-xs font-semibold px-3 py-1 rounded-full border w-max shrink-0 ${
                           getMitigationStatusBadge(finding.status).color
                         }`}
                       >
@@ -514,11 +514,11 @@ export default function ReportDetailPage() {
 
                 <div className="space-y-3">
                   <div>
-                    <h4 className="font-bold text-slate-700 dark:text-slate-300 text-sm mb-1">Explanation</h4>
+                    <h4 className="prose font-bold text-slate-700 dark:text-slate-300 text-sm mb-1">Explanation</h4>
                     <Markdown>{finding.explanation}</Markdown>
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-700 dark:text-slate-300 text-sm mb-1">Recommendation</h4>
+                    <h4 className="prose font-bold text-slate-700 dark:text-slate-300 text-sm mb-1">Recommendation</h4>
                     <Markdown>{finding.recommendation}</Markdown>
                   </div>
 

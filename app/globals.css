@@ -231,24 +231,24 @@ button {
 }
 
 /* Code block text */
-.prose pre code {
+.prose > pre code {
   @apply bg-transparent text-slate-700 dark:text-slate-300 p-0 border-0;
 }
 
 /* Scrollbar styling for code blocks */
-.prose pre::-webkit-scrollbar {
+.prose > pre::-webkit-scrollbar {
   height: 8px;
 }
 
-.prose pre::-webkit-scrollbar-track {
+.prose > pre::-webkit-scrollbar-track {
   @apply bg-slate-200 dark:bg-slate-800 rounded;
 }
 
-.prose pre::-webkit-scrollbar-thumb {
+.prose > pre::-webkit-scrollbar-thumb {
   @apply bg-slate-400 dark:bg-slate-600 rounded;
 }
 
-.prose pre::-webkit-scrollbar-thumb:hover {
+.prose > pre::-webkit-scrollbar-thumb:hover {
   @apply bg-slate-500 dark:bg-slate-500;
 }
 
