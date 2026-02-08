@@ -141,8 +141,12 @@ export default function AuditDetailPage() {
     }
 
     try {
+      const foundAudit = reports?.find((report) => report.id == Number(audit_id));
+      console.log("Report data:", foundAudit);
+      if (!foundAudit) return toast.error("Audit not found");
+
       setIsCreatingFlow(true);
-      await createNewFlow(String(audit?.repositoryId), newFlowName, selectedFunctions);
+      await createNewFlow(String(foundAudit.repositoryId), newFlowName, selectedFunctions);
       toast.success("Custom flow created successfully");
 
       // Refresh flows
