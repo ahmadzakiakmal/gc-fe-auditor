@@ -327,8 +327,6 @@ export default function ReportDetailPage() {
     return statusMap[status] || "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400";
   };
 
-
-
   if (isLoading) {
     return (
       <div className="font-family-jakarta bg-light-secondary dark:bg-slate-950 w-full h-screen flex items-center justify-center">
@@ -490,9 +488,9 @@ export default function ReportDetailPage() {
                         {finding.severity.toUpperCase()}
                       </span>
                       <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full border ${getMitigationStatusBadge(
-                          finding.status,
-                        ).color}`}
+                        className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+                          getMitigationStatusBadge(finding.status).color
+                        }`}
                       >
                         {getMitigationStatusBadge(finding.status).label}
                       </span>
@@ -517,11 +515,11 @@ export default function ReportDetailPage() {
                 <div className="space-y-3">
                   <div>
                     <h4 className="font-bold text-slate-700 dark:text-slate-300 text-sm mb-1">Explanation</h4>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">{finding.explanation}</p>
+                    <Markdown>{finding.explanation}</Markdown>
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-700 dark:text-slate-300 text-sm mb-1">Recommendation</h4>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">{finding.recommendation}</p>
+                    <Markdown>{finding.recommendation}</Markdown>
                   </div>
 
                   {/* Dev Comment & Auditor Response */}
