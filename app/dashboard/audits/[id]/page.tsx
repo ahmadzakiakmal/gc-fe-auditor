@@ -67,6 +67,9 @@ export default function AuditDetailPage() {
 
         if (foundAudit.status != "QUEUE") return router.replace(`/dashboard/audits/reports/${audit_id}`);
 
+        const repoFunctions = await getRepoFunctions(String(foundAudit.repository_id));
+        setAvailableFunctions(repoFunctions.data);
+
         const scopeData = await getAuditScope(String(audit_id));
         console.log(scopeData.data.in_scope_files);
         console.log(scopeData.data.out_of_scope_files);
